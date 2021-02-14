@@ -1,0 +1,16 @@
+overwrite: true
+schema:
+  https://english.hasura.app/v1/graphql:
+documents: 'src/**/*.graphql'
+generates:
+  src/generated/graphql.tsx:
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-urql'
+      - 'fragment-matcher'
+    config:
+      withHooks: true
+  ./graphql.schema.json:
+    plugins:
+      - 'introspection'

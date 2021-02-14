@@ -1,0 +1,20 @@
+type Attendance {
+  date: Date
+  hasAttended: Boolean
+  student: Student
+}
+type Student {
+  name: String!
+  group: Group
+  attendance: [Attendance!]! @relation
+}
+type Group {
+  name: String!
+  days: [String!]!
+  students: [Student!]! @relation
+}
+
+type Query {
+  allGroups: [Group!]!
+  studentsByName(name: String!): [Student!]!
+}

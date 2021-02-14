@@ -1,0 +1,8 @@
+mutation CreateAttendance($object: attendance_insert_input!) {
+  insert_attendance_one(object: $object) {
+    attended
+    date
+    id
+    student_id
+  }
+}

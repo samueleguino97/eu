@@ -1,0 +1,11 @@
+query Students($date: date, $groupId: Int!) {
+  students(where: { group_id: { _eq: $groupId } }) {
+    attendances {
+      attended
+      date
+      id
+    }
+    id
+    name
+  }
+}
