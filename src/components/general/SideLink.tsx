@@ -2,7 +2,7 @@ import { Icon, makeStyles, Theme } from '@material-ui/core';
 import Link from 'next/link';
 import * as React from 'react';
 
-const useStyles = makeStyles<Theme, { active: bool }>({
+const useStyles = makeStyles<Theme, { active: boolean }>({
   container: {
     height: 50,
     width: '100%',
