@@ -1,8 +1,8 @@
-import { Icon, makeStyles } from '@material-ui/core';
+import { Icon, makeStyles, Theme } from '@material-ui/core';
 import Link from 'next/link';
 import * as React from 'react';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles<Theme, { active: bool }>({
   container: {
     height: 50,
     width: '100%',
