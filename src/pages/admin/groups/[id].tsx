@@ -151,7 +151,7 @@ function Groups({}: GroupsProps) {
               <div key={s.id + date.toString()} className={classes.studentAtt}>
                 <div>{s.name}</div>
                 <Select
-                  value={
+                  defaultValue={
                     attendancesToObject(s.attendances)[
                       format(date, 'yyyy-MM-dd')
                     ] || false
