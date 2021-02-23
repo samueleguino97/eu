@@ -8,6 +8,7 @@ import {
   useUpdateAttendanceMutation,
 } from '@/generated/graphql';
 import useFormState from '@/hooks/useFormState';
+import attendanceDateRange from '@/utils/attendanceDateRange';
 import attendancesToObject from '@/utils/attendancesToObject';
 import {
   Card,
@@ -79,6 +80,7 @@ function Groups({}: GroupsProps) {
     variables: { groupId: +router.query.id },
   });
   const [isCreating, setIsCreating] = React.useState<boolean>(false);
+  const [reportIsOpen, setReportIsOpen] = React.useState<boolean>(false);
   const classes = useStyles();
   const [state, setField] = useFormState({});
   const [date, setDate] = React.useState<Date>(new Date());
@@ -194,64 +196,11 @@ function Groups({}: GroupsProps) {
               }
               value={dateRange.to}
             />
-            <Button>Generar Reporte</Button>
+            <Button onClick={() => setReportIsOpen(true)}>
+              Generar Reporte
+            </Button>
           </div>
         </Card>
-        <Grid spacing={4} container>
-          {/* {studentsResponse.data?.students.map((g) => (
-            <div className={classes.groupListItem}>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  fontWeight: 'bold',
-                  fontSize: 20,
-                }}
-              >
-                {g.name}
-              </div>
-              <div className={classes.groupAttendance}>
-                {new Array(13).fill(0).map((_, i) => (
-                  <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={
-                            g.attendances?.find((a) =>
-                              isSameDay(
-                                new Date(a.date),
-                                addDays(
-                                  startOfMonth(
-                                    setMonth(new Date(), monthSelected),
-                                  ),
-                                  i,
-                                ),
-                              ),
-                            )?.attended || false
-                          }
-                          onChange={() =>
-                            handleAttendance(
-                              g,
-                              addDays(
-                                startOfMonth(
-                                  setMonth(new Date(), monthSelected),
-                                ),
-                                i + 1,
-                              ),
-                            )
-                          }
-                        />
-                      }
-                      label={i + 1}
-                      labelPlacement="top"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))} */}
-        </Grid>
       </div>
       <Dialog open={isCreating} onClose={() => setIsCreating(false)}>
         <DialogTitle>Create Student</DialogTitle>
@@ -263,6 +212,49 @@ function Groups({}: GroupsProps) {
         <DialogActions>
           <Button onClick={handleStudentCreation}>Create Group</Button>
         </DialogActions>
+      </Dialog>
+
+      <Dialog open={reportIsOpen} fullScreen>
+        <DialogTitle>Reporte</DialogTitle>
+        <DialogContent>
+          {studentsResponse.data?.students.map((g) => (
+            <div style={{ display: 'flex' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  fontWeight: 'bold',
+                  fontSize: 20,
+                }}
+              >
+                {g.name}
+              </div>
+              <div style={{ display: 'flex' }}>
+                {attendanceDateRange(
+                  dateRange.from,
+                  dateRange.to,
+                  studentsResponse.data?.students
+                    .map((s) => s.attendances)
+                    .flat(),
+                ).map((key, i) => (
+                  <div style={{ justifyContent: 'center' }}>
+                    <div>{key.toString()}</div>
+                    <div>
+                      {
+                        g.attendances?.find(
+                          (a) =>
+                            getDate(new Date(key)) ===
+                            getDate(new Date(a.date)),
+                        )?.status
+                      }
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </DialogContent>
       </Dialog>
     </div>
   );
