@@ -1,0 +1,9 @@
+mutation UpdateAttendance($id: Int!, $object: attendance_set_input!) {
+  update_attendance_by_pk(pk_columns: { id: $id }, _set: $object) {
+    id
+    date
+    attended
+    status
+    student_id
+  }
+}

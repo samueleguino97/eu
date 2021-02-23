@@ -1,5 +1,9 @@
 import Button from '@/components/general/Button';
-import { useCreateGroupMutation, useGroupsQuery } from '@/generated/graphql';
+import {
+  useCreateGroupMutation,
+  useDeleteGroupMutation,
+  useGroupsQuery,
+} from '@/generated/graphql';
 import useFormState from '@/hooks/useFormState';
 import {
   Card,
@@ -42,6 +46,7 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     alignItems: 'center',
     textAlign: 'center',
+    position: 'relative',
     '& h3': {
       fontWeight: 'bolder',
       fontSize: 14,
@@ -57,9 +62,24 @@ const useStyles = makeStyles({
       height: 80,
       width: 80,
       borderRadius: '50%',
-      backgroundColor: '#eee',
-      border: '0.5px solid #eee',
+      backgroundColor: '#e2ffe6',
+      border: '0.5px solid #e2ffe6',
     },
+  },
+  close: {
+    position: 'absolute',
+    top: 15,
+    right: 15,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontWeight: 'bolder',
+    backgroundColor: '#df5f5f',
+    borderRadius: '50%',
+    color: 'white',
+    height: 25,
+    width: 25,
+    fontSize: 10,
   },
 });
 export type GroupsProps = {};
@@ -67,6 +87,7 @@ export type GroupsProps = {};
 function Groups({}: GroupsProps) {
   const [groupResponse] = useGroupsQuery();
   const [, createGroup] = useCreateGroupMutation();
+  const [, deleteGroup] = useDeleteGroupMutation();
   const [isCreating, setIsCreating] = React.useState<boolean>(false);
   const classes = useStyles();
   const [state, setField] = useFormState({});
@@ -76,6 +97,10 @@ function Groups({}: GroupsProps) {
   async function handleGroupCreation() {
     await createGroup({ object: { name: state.name, date: state.date } });
     setIsCreating(false);
+  }
+
+  async function handleDelete(id: number) {
+    await deleteGroup({ id });
   }
 
   return (
@@ -91,6 +116,15 @@ function Groups({}: GroupsProps) {
                 onClick={() => router.push('/admin/groups/' + g.id)}
                 className={classes.groupCard}
               >
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(g.id);
+                  }}
+                  className={classes.close}
+                >
+                  X
+                </div>
                 <div className={'imagen'}>
                   <img />
                 </div>

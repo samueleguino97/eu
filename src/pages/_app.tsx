@@ -1,4 +1,10 @@
 import AdminLayout from '@/components/layouts/AdminLayout';
+import {
+  Students,
+  StudentsDocument,
+  StudentsQuery,
+  StudentsQueryVariables,
+} from '@/generated/graphql';
 import DateFnsUtils from '@date-io/date-fns';
 import {
   createMuiTheme,
@@ -11,7 +17,13 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { cacheExchange } from '@urql/exchange-graphcache';
 import { useEffect } from 'react';
 
-import { Provider, createClient, dedupExchange, fetchExchange } from 'urql';
+import {
+  Provider,
+  createClient,
+  dedupExchange,
+  fetchExchange,
+  gql,
+} from 'urql';
 
 const client = createClient({
   url: 'https://english.hasura.app/v1/graphql',

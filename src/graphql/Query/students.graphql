@@ -4,6 +4,7 @@ query Students($date: date, $groupId: Int!) {
       attended
       date
       id
+      status
     }
     id
     name

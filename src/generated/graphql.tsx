@@ -12,7 +12,9 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  _text: any;
   date: any;
+  numeric: any;
 };
 
 /** expression to compare columns of type Boolean. All fields are combined with logical 'AND'. */
@@ -60,12 +62,27 @@ export type String_Comparison_Exp = {
   _similar?: Maybe<Scalars['String']>;
 };
 
+
+/** expression to compare columns of type _text. All fields are combined with logical 'AND'. */
+export type _Text_Comparison_Exp = {
+  _eq?: Maybe<Scalars['_text']>;
+  _gt?: Maybe<Scalars['_text']>;
+  _gte?: Maybe<Scalars['_text']>;
+  _in?: Maybe<Array<Scalars['_text']>>;
+  _is_null?: Maybe<Scalars['Boolean']>;
+  _lt?: Maybe<Scalars['_text']>;
+  _lte?: Maybe<Scalars['_text']>;
+  _neq?: Maybe<Scalars['_text']>;
+  _nin?: Maybe<Array<Scalars['_text']>>;
+};
+
 /** columns and relationships of "attendance" */
 export type Attendance = {
   __typename?: 'attendance';
   attended: Scalars['Boolean'];
   date: Scalars['date'];
   id: Scalars['Int'];
+  status?: Maybe<Scalars['String']>;
   /** An object relationship */
   student: Students;
   student_id: Scalars['Int'];
@@ -143,6 +160,7 @@ export type Attendance_Bool_Exp = {
   attended?: Maybe<Boolean_Comparison_Exp>;
   date?: Maybe<Date_Comparison_Exp>;
   id?: Maybe<Int_Comparison_Exp>;
+  status?: Maybe<String_Comparison_Exp>;
   student?: Maybe<Students_Bool_Exp>;
   student_id?: Maybe<Int_Comparison_Exp>;
 };
@@ -164,6 +182,7 @@ export type Attendance_Insert_Input = {
   attended?: Maybe<Scalars['Boolean']>;
   date?: Maybe<Scalars['date']>;
   id?: Maybe<Scalars['Int']>;
+  status?: Maybe<Scalars['String']>;
   student?: Maybe<Students_Obj_Rel_Insert_Input>;
   student_id?: Maybe<Scalars['Int']>;
 };
@@ -173,6 +192,7 @@ export type Attendance_Max_Fields = {
   __typename?: 'attendance_max_fields';
   date?: Maybe<Scalars['date']>;
   id?: Maybe<Scalars['Int']>;
+  status?: Maybe<Scalars['String']>;
   student_id?: Maybe<Scalars['Int']>;
 };
 
@@ -180,6 +200,7 @@ export type Attendance_Max_Fields = {
 export type Attendance_Max_Order_By = {
   date?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+  status?: Maybe<Order_By>;
   student_id?: Maybe<Order_By>;
 };
 
@@ -188,6 +209,7 @@ export type Attendance_Min_Fields = {
   __typename?: 'attendance_min_fields';
   date?: Maybe<Scalars['date']>;
   id?: Maybe<Scalars['Int']>;
+  status?: Maybe<Scalars['String']>;
   student_id?: Maybe<Scalars['Int']>;
 };
 
@@ -195,6 +217,7 @@ export type Attendance_Min_Fields = {
 export type Attendance_Min_Order_By = {
   date?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+  status?: Maybe<Order_By>;
   student_id?: Maybe<Order_By>;
 };
 
@@ -225,6 +248,7 @@ export type Attendance_Order_By = {
   attended?: Maybe<Order_By>;
   date?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+  status?: Maybe<Order_By>;
   student?: Maybe<Students_Order_By>;
   student_id?: Maybe<Order_By>;
 };
@@ -243,6 +267,8 @@ export enum Attendance_Select_Column {
   /** column name */
   Id = 'id',
   /** column name */
+  Status = 'status',
+  /** column name */
   StudentId = 'student_id'
 }
 
@@ -251,6 +277,7 @@ export type Attendance_Set_Input = {
   attended?: Maybe<Scalars['Boolean']>;
   date?: Maybe<Scalars['date']>;
   id?: Maybe<Scalars['Int']>;
+  status?: Maybe<Scalars['String']>;
   student_id?: Maybe<Scalars['Int']>;
 };
 
@@ -315,6 +342,8 @@ export enum Attendance_Update_Column {
   /** column name */
   Id = 'id',
   /** column name */
+  Status = 'status',
+  /** column name */
   StudentId = 'student_id'
 }
 
@@ -374,7 +403,9 @@ export type Date_Comparison_Exp = {
 /** columns and relationships of "groups" */
 export type Groups = {
   __typename?: 'groups';
+  current_month?: Maybe<Scalars['numeric']>;
   date?: Maybe<Scalars['date']>;
+  days?: Maybe<Scalars['_text']>;
   id: Scalars['Int'];
   name: Scalars['String'];
   /** An array relationship */
@@ -457,11 +488,13 @@ export type Groups_Arr_Rel_Insert_Input = {
 /** aggregate avg on columns */
 export type Groups_Avg_Fields = {
   __typename?: 'groups_avg_fields';
+  current_month?: Maybe<Scalars['Float']>;
   id?: Maybe<Scalars['Float']>;
 };
 
 /** order by avg() on columns of table "groups" */
 export type Groups_Avg_Order_By = {
+  current_month?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
 };
 
@@ -470,7 +503,9 @@ export type Groups_Bool_Exp = {
   _and?: Maybe<Array<Maybe<Groups_Bool_Exp>>>;
   _not?: Maybe<Groups_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Groups_Bool_Exp>>>;
+  current_month?: Maybe<Numeric_Comparison_Exp>;
   date?: Maybe<Date_Comparison_Exp>;
+  days?: Maybe<_Text_Comparison_Exp>;
   id?: Maybe<Int_Comparison_Exp>;
   name?: Maybe<String_Comparison_Exp>;
   students?: Maybe<Students_Bool_Exp>;
@@ -486,12 +521,15 @@ export enum Groups_Constraint {
 
 /** input type for incrementing integer column in table "groups" */
 export type Groups_Inc_Input = {
+  current_month?: Maybe<Scalars['numeric']>;
   id?: Maybe<Scalars['Int']>;
 };
 
 /** input type for inserting data into table "groups" */
 export type Groups_Insert_Input = {
+  current_month?: Maybe<Scalars['numeric']>;
   date?: Maybe<Scalars['date']>;
+  days?: Maybe<Scalars['_text']>;
   id?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
   students?: Maybe<Students_Arr_Rel_Insert_Input>;
@@ -500,6 +538,7 @@ export type Groups_Insert_Input = {
 /** aggregate max on columns */
 export type Groups_Max_Fields = {
   __typename?: 'groups_max_fields';
+  current_month?: Maybe<Scalars['numeric']>;
   date?: Maybe<Scalars['date']>;
   id?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
@@ -507,6 +546,7 @@ export type Groups_Max_Fields = {
 
 /** order by max() on columns of table "groups" */
 export type Groups_Max_Order_By = {
+  current_month?: Maybe<Order_By>;
   date?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
@@ -515,6 +555,7 @@ export type Groups_Max_Order_By = {
 /** aggregate min on columns */
 export type Groups_Min_Fields = {
   __typename?: 'groups_min_fields';
+  current_month?: Maybe<Scalars['numeric']>;
   date?: Maybe<Scalars['date']>;
   id?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
@@ -522,6 +563,7 @@ export type Groups_Min_Fields = {
 
 /** order by min() on columns of table "groups" */
 export type Groups_Min_Order_By = {
+  current_month?: Maybe<Order_By>;
   date?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
@@ -551,7 +593,9 @@ export type Groups_On_Conflict = {
 
 /** ordering options when selecting data from "groups" */
 export type Groups_Order_By = {
+  current_month?: Maybe<Order_By>;
   date?: Maybe<Order_By>;
+  days?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
   students_aggregate?: Maybe<Students_Aggregate_Order_By>;
@@ -565,7 +609,11 @@ export type Groups_Pk_Columns_Input = {
 /** select columns of table "groups" */
 export enum Groups_Select_Column {
   /** column name */
+  CurrentMonth = 'current_month',
+  /** column name */
   Date = 'date',
+  /** column name */
+  Days = 'days',
   /** column name */
   Id = 'id',
   /** column name */
@@ -574,7 +622,9 @@ export enum Groups_Select_Column {
 
 /** input type for updating data in table "groups" */
 export type Groups_Set_Input = {
+  current_month?: Maybe<Scalars['numeric']>;
   date?: Maybe<Scalars['date']>;
+  days?: Maybe<Scalars['_text']>;
   id?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
 };
@@ -582,51 +632,63 @@ export type Groups_Set_Input = {
 /** aggregate stddev on columns */
 export type Groups_Stddev_Fields = {
   __typename?: 'groups_stddev_fields';
+  current_month?: Maybe<Scalars['Float']>;
   id?: Maybe<Scalars['Float']>;
 };
 
 /** order by stddev() on columns of table "groups" */
 export type Groups_Stddev_Order_By = {
+  current_month?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Groups_Stddev_Pop_Fields = {
   __typename?: 'groups_stddev_pop_fields';
+  current_month?: Maybe<Scalars['Float']>;
   id?: Maybe<Scalars['Float']>;
 };
 
 /** order by stddev_pop() on columns of table "groups" */
 export type Groups_Stddev_Pop_Order_By = {
+  current_month?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Groups_Stddev_Samp_Fields = {
   __typename?: 'groups_stddev_samp_fields';
+  current_month?: Maybe<Scalars['Float']>;
   id?: Maybe<Scalars['Float']>;
 };
 
 /** order by stddev_samp() on columns of table "groups" */
 export type Groups_Stddev_Samp_Order_By = {
+  current_month?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
 };
 
 /** aggregate sum on columns */
 export type Groups_Sum_Fields = {
   __typename?: 'groups_sum_fields';
+  current_month?: Maybe<Scalars['numeric']>;
   id?: Maybe<Scalars['Int']>;
 };
 
 /** order by sum() on columns of table "groups" */
 export type Groups_Sum_Order_By = {
+  current_month?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
 };
 
 /** update columns of table "groups" */
 export enum Groups_Update_Column {
   /** column name */
+  CurrentMonth = 'current_month',
+  /** column name */
   Date = 'date',
+  /** column name */
+  Days = 'days',
   /** column name */
   Id = 'id',
   /** column name */
@@ -636,33 +698,39 @@ export enum Groups_Update_Column {
 /** aggregate var_pop on columns */
 export type Groups_Var_Pop_Fields = {
   __typename?: 'groups_var_pop_fields';
+  current_month?: Maybe<Scalars['Float']>;
   id?: Maybe<Scalars['Float']>;
 };
 
 /** order by var_pop() on columns of table "groups" */
 export type Groups_Var_Pop_Order_By = {
+  current_month?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
 };
 
 /** aggregate var_samp on columns */
 export type Groups_Var_Samp_Fields = {
   __typename?: 'groups_var_samp_fields';
+  current_month?: Maybe<Scalars['Float']>;
   id?: Maybe<Scalars['Float']>;
 };
 
 /** order by var_samp() on columns of table "groups" */
 export type Groups_Var_Samp_Order_By = {
+  current_month?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
 };
 
 /** aggregate variance on columns */
 export type Groups_Variance_Fields = {
   __typename?: 'groups_variance_fields';
+  current_month?: Maybe<Scalars['Float']>;
   id?: Maybe<Scalars['Float']>;
 };
 
 /** order by variance() on columns of table "groups" */
 export type Groups_Variance_Order_By = {
+  current_month?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
 };
 
@@ -831,6 +899,20 @@ export type Mutation_RootUpdate_Students_By_PkArgs = {
   _inc?: Maybe<Students_Inc_Input>;
   _set?: Maybe<Students_Set_Input>;
   pk_columns: Students_Pk_Columns_Input;
+};
+
+
+/** expression to compare columns of type numeric. All fields are combined with logical 'AND'. */
+export type Numeric_Comparison_Exp = {
+  _eq?: Maybe<Scalars['numeric']>;
+  _gt?: Maybe<Scalars['numeric']>;
+  _gte?: Maybe<Scalars['numeric']>;
+  _in?: Maybe<Array<Scalars['numeric']>>;
+  _is_null?: Maybe<Scalars['Boolean']>;
+  _lt?: Maybe<Scalars['numeric']>;
+  _lte?: Maybe<Scalars['numeric']>;
+  _neq?: Maybe<Scalars['numeric']>;
+  _nin?: Maybe<Array<Scalars['numeric']>>;
 };
 
 /** column ordering options */
@@ -1405,6 +1487,33 @@ export type CreateStudentMutation = (
   )> }
 );
 
+export type DeleteGroupMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type DeleteGroupMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_groups_by_pk?: Maybe<(
+    { __typename?: 'groups' }
+    & Pick<Groups, 'name' | 'id' | 'days' | 'date'>
+  )> }
+);
+
+export type UpdateAttendanceMutationVariables = Exact<{
+  id: Scalars['Int'];
+  object: Attendance_Set_Input;
+}>;
+
+
+export type UpdateAttendanceMutation = (
+  { __typename?: 'mutation_root' }
+  & { update_attendance_by_pk?: Maybe<(
+    { __typename?: 'attendance' }
+    & Pick<Attendance, 'id' | 'date' | 'attended' | 'status' | 'student_id'>
+  )> }
+);
+
 export type GroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1412,7 +1521,21 @@ export type GroupsQuery = (
   { __typename?: 'query_root' }
   & { groups: Array<(
     { __typename?: 'groups' }
-    & Pick<Groups, 'id' | 'name' | 'date'>
+    & Pick<Groups, 'id' | 'name' | 'date' | 'current_month'>
+  )> }
+);
+
+export type ReportDataQueryVariables = Exact<{
+  fromDate: Scalars['date'];
+  toDate: Scalars['date'];
+}>;
+
+
+export type ReportDataQuery = (
+  { __typename?: 'query_root' }
+  & { attendance: Array<(
+    { __typename?: 'attendance' }
+    & Pick<Attendance, 'id' | 'date'>
   )> }
 );
 
@@ -1429,7 +1552,7 @@ export type StudentsQuery = (
     & Pick<Students, 'id' | 'name'>
     & { attendances: Array<(
       { __typename?: 'attendance' }
-      & Pick<Attendance, 'attended' | 'date' | 'id'>
+      & Pick<Attendance, 'attended' | 'date' | 'id' | 'status'>
     )> }
   )> }
 );
@@ -1474,18 +1597,60 @@ export const CreateStudentDocument = gql`
 export function useCreateStudentMutation() {
   return Urql.useMutation<CreateStudentMutation, CreateStudentMutationVariables>(CreateStudentDocument);
 };
+export const DeleteGroupDocument = gql`
+    mutation DeleteGroup($id: Int!) {
+  delete_groups_by_pk(id: $id) {
+    name
+    id
+    days
+    date
+  }
+}
+    `;
+
+export function useDeleteGroupMutation() {
+  return Urql.useMutation<DeleteGroupMutation, DeleteGroupMutationVariables>(DeleteGroupDocument);
+};
+export const UpdateAttendanceDocument = gql`
+    mutation UpdateAttendance($id: Int!, $object: attendance_set_input!) {
+  update_attendance_by_pk(pk_columns: {id: $id}, _set: $object) {
+    id
+    date
+    attended
+    status
+    student_id
+  }
+}
+    `;
+
+export function useUpdateAttendanceMutation() {
+  return Urql.useMutation<UpdateAttendanceMutation, UpdateAttendanceMutationVariables>(UpdateAttendanceDocument);
+};
 export const GroupsDocument = gql`
     query Groups {
   groups {
     id
     name
     date
+    current_month
   }
 }
     `;
 
 export function useGroupsQuery(options: Omit<Urql.UseQueryArgs<GroupsQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<GroupsQuery>({ query: GroupsDocument, ...options });
+};
+export const ReportDataDocument = gql`
+    query ReportData($fromDate: date!, $toDate: date!) {
+  attendance(where: {_and: [{date: {_gte: fromDate}}, {date: {_lte: toDate}}]}) {
+    id
+    date
+  }
+}
+    `;
+
+export function useReportDataQuery(options: Omit<Urql.UseQueryArgs<ReportDataQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<ReportDataQuery>({ query: ReportDataDocument, ...options });
 };
 export const StudentsDocument = gql`
     query Students($date: date, $groupId: Int!) {
@@ -1494,6 +1659,7 @@ export const StudentsDocument = gql`
       attended
       date
       id
+      status
     }
     id
     name
