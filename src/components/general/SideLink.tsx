@@ -13,12 +13,12 @@ const useStyles = makeStyles<Theme, { active: boolean }>({
     gridTemplateColumns: '24px 1fr 24px',
     gridTemplateRows: '1fr',
     textDecoration: 'none',
-    color: ({ active }) => (active ? '#2fb96d' : '#bbb'),
+    color: ({ active }) => (active ? '#ffffff' : '#bbb'),
   },
   main: {
     display: 'flex',
     alignItems: 'center',
-    backgroundColor: ({ active }) => (active ? '#c1f8da' : 'transparent'),
+    backgroundColor: ({ active }) => (active ? '#2b5829' : 'transparent'),
     borderRadius: 12,
     padding: '0 24px',
     fontWeight: 'bold',
@@ -29,7 +29,7 @@ const useStyles = makeStyles<Theme, { active: boolean }>({
     '& >div': {
       height: '80%',
       width: 5,
-      backgroundColor: ({ active }) => (active ? '#2fb96d' : 'transparent'),
+      backgroundColor: ({ active }) => (active ? '#2b5829' : 'transparent'),
       borderTopRightRadius: 20,
       borderBottomRightRadius: 20,
     },

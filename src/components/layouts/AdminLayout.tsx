@@ -78,7 +78,7 @@ function AdminLayout({ children }: AdminLayoutProps) {
         <div className={classes.sidebar}>
           <div className={classes.logo}>
             <div>
-              English Unlimited<span> .</span>
+              <img width="100%" src="/logo.jpeg" />
             </div>
           </div>
           <nav>
