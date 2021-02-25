@@ -18,6 +18,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { cacheExchange } from '@urql/exchange-graphcache';
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 import {
@@ -139,13 +140,24 @@ export default function MyApp({ Component, pageProps }) {
     }
   }, []);
 
+  const router = useRouter();
+
+  function getLayout() {
+    if (router.pathname.startsWith('/admin')) {
+      return AdminLayout;
+    }
+
+    return 'div';
+  }
+  const Layout = getLayout();
+
   return (
     <MuiThemeProvider theme={theme}>
       <Provider value={client}>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <AdminLayout>
+          <Layout>
             <Component {...pageProps} />
-          </AdminLayout>
+          </Layout>
         </MuiPickersUtilsProvider>
       </Provider>
     </MuiThemeProvider>

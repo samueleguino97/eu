@@ -104,16 +104,17 @@ function Groups({}: GroupsProps) {
     setIsCreating(false);
   }
 
-  async function handleAttendance(student, date, status) {
+  async function handleAttendance(student, status) {
+    const formattedDate = format(date, 'yyyy-MM-dd');
     if (
       !student.attendances?.find(
-        (a) => getDate(date) === getDate(new Date(a.date)),
+        (a) => formattedDate === format(new Date(a.date), 'yyyy-MM-dd'),
       )
     ) {
       await createAttendance({
         object: {
           student_id: student.id,
-          date: date,
+          date: formattedDate,
           status,
           attended: true,
         },
@@ -122,7 +123,7 @@ function Groups({}: GroupsProps) {
       await updateAttendance({
         object: { status },
         id: student.attendances?.find(
-          (a) => getDate(date) === getDate(new Date(a.date)),
+          (a) => formattedDate === format(new Date(a.date), 'yyyy-MM-dd'),
         )?.id,
       });
     }
@@ -162,9 +163,9 @@ function Groups({}: GroupsProps) {
                   value={
                     attendancesToObject(s.attendances)[
                       format(date, 'yyyy-MM-dd')
-                    ] || false
+                    ] || ''
                   }
-                  onChange={(e) => handleAttendance(s, date, e.target.value)}
+                  onChange={(e) => handleAttendance(s, e.target.value)}
                 >
                   <MenuItem value={'p'}>P</MenuItem>
                   <MenuItem value={'a'}>A</MenuItem>
