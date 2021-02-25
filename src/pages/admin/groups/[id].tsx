@@ -105,12 +105,11 @@ function Groups({}: GroupsProps) {
   }
 
   async function handleAttendance(student, status) {
+    const isCreated = !student.attendances?.find(
+      (a) => formattedDate === format(new Date(a.date), 'yyyy-MM-dd'),
+    );
     const formattedDate = format(date, 'yyyy-MM-dd');
-    if (
-      !student.attendances?.find(
-        (a) => formattedDate === format(new Date(a.date), 'yyyy-MM-dd'),
-      )
-    ) {
+    if (isCreated) {
       await createAttendance({
         object: {
           student_id: student.id,
