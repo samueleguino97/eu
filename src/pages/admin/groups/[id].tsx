@@ -21,7 +21,14 @@ import {
   Grid,
   makeStyles,
   MenuItem,
+  Paper,
   Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
 } from '@material-ui/core';
 import { DatePicker } from '@material-ui/pickers';
@@ -123,7 +130,6 @@ function Groups({}: GroupsProps) {
   const group = groupsResponse.data?.groups.find(
     (g) => g.id === +router.query.id,
   );
-  console.log(studentsResponse.data?.students);
   return (
     <div className={classes.container}>
       <div>
@@ -153,7 +159,7 @@ function Groups({}: GroupsProps) {
               <div key={s.id + date.toString()} className={classes.studentAtt}>
                 <div>{s.name}</div>
                 <Select
-                  defaultValue={
+                  value={
                     attendancesToObject(s.attendances)[
                       format(date, 'yyyy-MM-dd')
                     ] || false
@@ -196,7 +202,15 @@ function Groups({}: GroupsProps) {
               }
               value={dateRange.to}
             />
-            <Button onClick={() => setReportIsOpen(true)}>
+            <Button
+              onClick={() => {
+                setReportIsOpen(true);
+                setTimeout(() => {
+                  window.print();
+                  setReportIsOpen(false);
+                }, 1000);
+              }}
+            >
               Generar Reporte
             </Button>
           </div>
@@ -215,45 +229,97 @@ function Groups({}: GroupsProps) {
       </Dialog>
 
       <Dialog open={reportIsOpen} fullScreen>
-        <DialogTitle>Reporte</DialogTitle>
+        <DialogTitle>
+          {group?.name} -{' '}
+          <span style={{ fontSize: 24, fontWeight: 700 }}>
+            {format(dateRange.from, 'MMMM do')}
+          </span>{' '}
+          to{' '}
+          <span style={{ fontSize: 24, fontWeight: 700 }}>
+            {format(dateRange.to, 'MMMM do')}
+          </span>
+        </DialogTitle>
         <DialogContent>
-          {studentsResponse.data?.students.map((g) => (
-            <div style={{ display: 'flex' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  fontWeight: 'bold',
-                  fontSize: 20,
-                }}
-              >
-                {g.name}
-              </div>
-              <div style={{ display: 'flex' }}>
-                {attendanceDateRange(
-                  dateRange.from,
-                  dateRange.to,
-                  studentsResponse.data?.students
-                    .map((s) => s.attendances)
-                    .flat(),
-                ).map((key, i) => (
-                  <div style={{ justifyContent: 'center' }}>
-                    <div>{key.toString()}</div>
-                    <div>
-                      {
-                        g.attendances?.find(
-                          (a) =>
-                            getDate(new Date(key)) ===
-                            getDate(new Date(a.date)),
-                        )?.status
-                      }
-                    </div>
-                  </div>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell
+                    style={{
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                    }}
+                    component="th"
+                  >
+                    Attenddance
+                  </TableCell>
+                  {attendanceDateRange(
+                    dateRange.from,
+                    dateRange.to,
+                    studentsResponse.data?.students
+                      .map((s) => s.attendances)
+                      .flat(),
+                  ).map((key, i) => (
+                    <TableCell
+                      align="center"
+                      style={{
+                        fontSize: 20,
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {format(key, 'MMM do')}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+
+              <TableBody>
+                {studentsResponse.data?.students.map((g) => (
+                  <TableRow>
+                    <TableCell
+                      style={{
+                        fontSize: 18,
+                      }}
+                      component="th"
+                    >
+                      {g.name}
+                    </TableCell>
+                    {attendanceDateRange(
+                      dateRange.from,
+                      dateRange.to,
+                      studentsResponse.data?.students
+                        .map((s) => s.attendances)
+                        .flat(),
+                    ).map((key, i) => (
+                      <TableCell align="center">
+                        <span
+                          style={{
+                            fontSize: 20,
+                            textTransform: 'uppercase',
+                            fontWeight: 'bold',
+                            color:
+                              attendancesToObject(g.attendances)[
+                                format(key, 'yyyy-MM-dd')
+                              ] === 'p'
+                                ? '#1fc97a'
+                                : attendancesToObject(g.attendances)[
+                                    format(key, 'yyyy-MM-dd')
+                                  ] === 'r'
+                                ? '#dbd035'
+                                : 'red',
+                          }}
+                        >
+                          {attendancesToObject(g.attendances)[
+                            format(key, 'yyyy-MM-dd')
+                          ] || 'A'}
+                        </span>
+                      </TableCell>
+                    ))}
+                  </TableRow>
                 ))}
-              </div>
-            </div>
-          ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </DialogContent>
       </Dialog>
     </div>

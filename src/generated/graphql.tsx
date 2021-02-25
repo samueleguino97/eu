@@ -1458,6 +1458,10 @@ export type CreateAttendanceMutation = (
   & { insert_attendance_one?: Maybe<(
     { __typename?: 'attendance' }
     & Pick<Attendance, 'attended' | 'date' | 'id' | 'student_id'>
+    & { student: (
+      { __typename?: 'students' }
+      & Pick<Students, 'group_id'>
+    ) }
   )> }
 );
 
@@ -1483,7 +1487,11 @@ export type CreateStudentMutation = (
   { __typename?: 'mutation_root' }
   & { insert_students_one?: Maybe<(
     { __typename?: 'students' }
-    & Pick<Students, 'id' | 'name'>
+    & Pick<Students, 'id' | 'name' | 'group_id'>
+    & { attendances: Array<(
+      { __typename?: 'attendance' }
+      & Pick<Attendance, 'id'>
+    )> }
   )> }
 );
 
@@ -1565,6 +1573,9 @@ export const CreateAttendanceDocument = gql`
     date
     id
     student_id
+    student {
+      group_id
+    }
   }
 }
     `;
@@ -1590,6 +1601,10 @@ export const CreateStudentDocument = gql`
   insert_students_one(object: $object) {
     id
     name
+    group_id
+    attendances {
+      id
+    }
   }
 }
     `;

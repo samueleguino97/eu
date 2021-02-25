@@ -4,5 +4,8 @@ mutation CreateAttendance($object: attendance_insert_input!) {
     date
     id
     student_id
+    student {
+      group_id
+    }
   }
 }

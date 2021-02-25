@@ -2,5 +2,9 @@ mutation CreateStudent($object: students_insert_input!) {
   insert_students_one(object: $object) {
     id
     name
+    group_id
+    attendances {
+      id
+    }
   }
 }
