@@ -1,6 +1,5 @@
-import Button from '@/components/general/Button';
-import { useCourseQuery, useAddLessonMutation } from '@/generated/graphql';
-import useFormState from '@/hooks/useFormState';
+import Button from "@/components/general/Button";
+import useFormState from "@/hooks/useFormState";
 import {
   Accordion,
   AccordionDetails,
@@ -13,15 +12,15 @@ import {
   makeStyles,
   TextField,
   Typography,
-} from '@material-ui/core';
-import { DatePicker } from '@material-ui/pickers';
-import * as React from 'react';
+} from "@material-ui/core";
+import { DatePicker } from "@material-ui/pickers";
+import * as React from "react";
 
 const useStyles = makeStyles({
   modalForm: {
-    display: 'flex',
-    flexDirection: 'column',
-    '& >*': {
+    display: "flex",
+    flexDirection: "column",
+    "& >*": {
       marginBottom: 24,
     },
   },
@@ -30,22 +29,17 @@ const useStyles = makeStyles({
 export type ModuleProps = {};
 
 function Module({}: ModuleProps) {
-  const [courseRes] = useCourseQuery();
   const classes = useStyles();
   const [state, setField] = useFormState({});
 
   const [isCreating, setIsCreating] = React.useState<boolean>(false);
 
-  const [, addLesson] = useAddLessonMutation();
-
-  function handleCreation(module_id) {
-    addLesson({ object: { ...state, module_id } });
-  }
+  function handleCreation(module_id) {}
 
   return (
     <div style={{ padding: 24 }}>
-      <h1 style={{ fontSize: 32, textAlign: 'center' }}>Modules and lessons</h1>
-      {courseRes.data?.module.map((module) => (
+      <h1 style={{ fontSize: 32, textAlign: "center" }}>Modules and lessons</h1>
+      {/* {courseRes.data?.module.map((module) => (
         <>
           <Accordion>
             <AccordionSummary>
@@ -125,7 +119,7 @@ function Module({}: ModuleProps) {
             </DialogActions>
           </Dialog>
         </>
-      ))}
+      ))} */}
     </div>
   );
 }

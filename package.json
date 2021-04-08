@@ -54,7 +54,9 @@
     "react-three-fiber": "5.3.19",
     "redux": "4.0.5",
     "styled-components": "5.2.1",
-    "three": "0.126.1"
+    "three": "0.126.1",
+    "@react-spring/core": "*",
+    "@react-spring/web": "*"
   },
   "devDependencies": {
     "@commitlint/cli": "11.0.0",
