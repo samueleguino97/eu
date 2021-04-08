@@ -1,29 +1,32 @@
 import Button from '@/components/general/Button';
-import {
-  useCreateGroupMutation,
-  useDeleteGroupMutation,
-  useGroupsQuery,
-} from '@/generated/graphql';
+import GroupsLayout from '@/components/layouts/GroupsLayout';
 import useFormState from '@/hooks/useFormState';
+import {
+  deleteGroup,
+  fetchAllGroups,
+  insertGroup,
+} from '@/pageSlices/groups.thunk';
+import { useAppDispatch, useAppSelector } from '@/services/store';
 import {
   Card,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormLabel,
   Grid,
   makeStyles,
   TextField,
 } from '@material-ui/core';
-import { DatePicker } from '@material-ui/pickers';
+
+import { CirclePicker } from 'react-color';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 const useStyles = makeStyles({
   container: {
-    padding: 32,
     height: '100%',
     display: 'grid',
-    gridTemplateRows: '60px 1fr',
+    gridTemplateRows: '1fr',
   },
   groups: {
     backgroundColor: '#fff',
@@ -85,9 +88,12 @@ const useStyles = makeStyles({
 export type GroupsProps = {};
 
 function Groups({}: GroupsProps) {
-  const [groupResponse] = useGroupsQuery();
-  const [, createGroup] = useCreateGroupMutation();
-  const [, deleteGroup] = useDeleteGroupMutation();
+  const groups = useAppSelector((state) => state.groupsReducer.list);
+  const dispatch = useAppDispatch();
+
+  React.useEffect(() => {
+    dispatch(fetchAllGroups());
+  }, []);
   const [isCreating, setIsCreating] = React.useState<boolean>(false);
   const classes = useStyles();
   const [state, setField] = useFormState({});
@@ -95,12 +101,12 @@ function Groups({}: GroupsProps) {
   const router = useRouter();
 
   async function handleGroupCreation() {
-    await createGroup({ object: { name: state.name, date: state.date } });
+    dispatch(insertGroup({ name: state.name }));
     setIsCreating(false);
   }
 
-  async function handleDelete(id: number) {
-    await deleteGroup({ id });
+  async function handleDelete(id: string) {
+    dispatch(deleteGroup(id));
   }
 
   return (
@@ -110,7 +116,7 @@ function Groups({}: GroupsProps) {
       </div>
       <div className={classes.groups}>
         <Grid spacing={4} container>
-          {groupResponse.data?.groups.map((g) => (
+          {groups.map((g) => (
             <Grid xs={2} item>
               <Card
                 onClick={() => router.push('/admin/groups/' + g.id)}
@@ -129,30 +135,15 @@ function Groups({}: GroupsProps) {
                   <img />
                 </div>
                 <h3>{g.name}</h3>
-                <h4>{g.date}</h4>
               </Card>
             </Grid>
           ))}
         </Grid>
       </div>
-      <Dialog open={isCreating} onClose={() => setIsCreating(false)}>
-        <DialogTitle>Create Group</DialogTitle>
-        <DialogContent>
-          <div className={classes.modalForm}>
-            <TextField {...setField('name')} label="Name" variant="outlined" />
-            <DatePicker
-              {...setField('date')}
-              label="Payment Date"
-              inputVariant="outlined"
-            />
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleGroupCreation}>Create Group</Button>
-        </DialogActions>
-      </Dialog>
     </div>
   );
 }
+
+Groups.Layout = GroupsLayout;
 
 export default Groups;

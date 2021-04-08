@@ -2,6 +2,7 @@ import { makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import SideLink from '../general/SideLink';
 import { useRouter } from 'next/router';
+import supabase from '@/services/supabase';
 
 const useStyles = makeStyles({
   appContainer: {
@@ -20,7 +21,7 @@ const useStyles = makeStyles({
     height: '100vh',
   },
   main: {
-    backgroundColor: '#e7fff5',
+    backgroundColor: '#dff1ea',
     overflow: 'auto',
   },
   logo: {
@@ -53,14 +54,19 @@ const links = [
     to: '/admin/groups',
   },
   {
+    label: 'Calendar',
+    icon: 'today',
+    to: '/admin/calendar',
+  },
+  {
     label: 'Finances',
     icon: 'monetization_on',
     to: '/admin/finances',
   },
   {
-    label: 'Calendar',
-    icon: 'today',
-    to: '/admin/calendar',
+    label: 'Course Data',
+    icon: 'menu_book',
+    to: '/admin/modules',
   },
   {
     label: 'Settings',
@@ -72,6 +78,15 @@ const links = [
 function AdminLayout({ children }: AdminLayoutProps) {
   const classes = useStyles();
   const router = useRouter();
+
+  React.useEffect(() => {
+    const user = supabase.auth.user();
+    console.log(user);
+    if (!user) {
+      router.replace('/login');
+    }
+  }, []);
+
   return (
     <div className={classes.background}>
       <div className={classes.appContainer}>

@@ -17,7 +17,7 @@
     "type-check": "tsc",
     "lint": "eslint --ignore-path .gitignore \"src/**/*.+(ts|js|tsx)\"",
     "format": "prettier --ignore-path .gitignore \"src/**/*.+(ts|js|tsx)\" --write",
-    "generate": "graphql-codegen --config codegen.yml"
+    "gen-types": "npx openapi-typescript https://nfvqylvwkkpdzbfpytis.supabase.co/rest/v1/?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYxNzM5ODI2NSwiZXhwIjoxOTMyOTc0MjY1fQ.OSgC7lNWoUCpE6DnSiEjPNzX4iGhRJHdO5Pp9F6vWiI --output src/supabase-types.ts"
   },
   "husky": {
     "hooks": {
@@ -33,21 +33,28 @@
     ]
   },
   "dependencies": {
-    "@apollo/client": "3.3.8",
     "@date-io/date-fns": "1.x",
     "@material-ui/core": "4.11.3",
     "@material-ui/pickers": "3.2.10",
+    "@reduxjs/toolkit": "1.5.1",
+    "@supabase/supabase-js": "1.7.7",
     "@types/styled-components": "5.1.7",
-    "@urql/exchange-graphcache": "4.0.0",
+    "@zach.codes/react-calendar": "0.0.3",
     "date-fns": "2.17.0",
     "graphql": "15.5.0",
-    "next": "10.0.5",
+    "next": "10.1.0",
     "react": "17.0.1",
-    "react-big-calendar": "0.31.0",
+    "react-color": "2.19.3",
     "react-dom": "17.0.1",
+    "react-event-calendar": "0.3.0",
+    "react-minimal-pie-chart": "8.2.0",
     "react-modal": "3.12.1",
+    "react-redux": "7.2.3",
+    "react-spring": "9.0.0",
+    "react-three-fiber": "5.3.19",
+    "redux": "4.0.5",
     "styled-components": "5.2.1",
-    "urql": "2.0.1"
+    "three": "0.126.1"
   },
   "devDependencies": {
     "@commitlint/cli": "11.0.0",

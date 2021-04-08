@@ -1,8 +1,0 @@
-query ReportData($fromDate: date!, $toDate: date!) {
-  attendance(
-    where: { _and: [{ date: { _gte: fromDate } }, { date: { _lte: toDate } }] }
-  ) {
-    id
-    date
-  }
-}

@@ -1,8 +1,0 @@
-mutation DeleteGroup($id: Int!) {
-  delete_groups_by_pk(id: $id) {
-    name
-    id
-    days
-    date
-  }
-}

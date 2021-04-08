@@ -1,13 +1,15 @@
+import ClassGridItem from '@/components/classes/ClassGridItem';
 import Button from '@/components/general/Button';
-import {
-  useCreateStudentMutation,
-  useCreateAttendanceMutation,
-  useStudentsQuery,
-  Students,
-  useGroupsQuery,
-  useUpdateAttendanceMutation,
-} from '@/generated/graphql';
+import GroupsLayout from '@/components/layouts/GroupsLayout';
+import GeneratePeriodModal from '@/components/modals/GeneratePeriodModal';
+import ReportModal from '@/components/modals/ReportModal';
 import useFormState from '@/hooks/useFormState';
+import { fetchClassesByGroup } from '@/pageSlices/groups.thunk';
+import {
+  fetchStudentsByGroup,
+  insertStudent,
+} from '@/pageSlices/students.thunk';
+import { useAppDispatch, useAppSelector } from '@/services/store';
 import attendanceDateRange from '@/utils/attendanceDateRange';
 import attendancesToObject from '@/utils/attendancesToObject';
 import {
@@ -19,6 +21,13 @@ import {
   DialogTitle,
   Divider,
   Grid,
+  Icon,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemSecondaryAction,
+  ListItemText,
   makeStyles,
   MenuItem,
   Paper,
@@ -32,24 +41,18 @@ import {
   TextField,
 } from '@material-ui/core';
 import { DatePicker } from '@material-ui/pickers';
+import { useTrail } from '@react-spring/core';
+import { animated } from '@react-spring/web';
 import { format, getDate } from 'date-fns';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 const useStyles = makeStyles({
   container: {
-    padding: 32,
     height: '100%',
     display: 'grid',
-    gridTemplateRows: '60px 1fr',
-  },
-  groups: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    height: '100%',
-    width: '100%',
-    padding: 24,
-    display: 'grid',
-    gridTemplateColumns: ' 1fr 1fr 1fr ',
+    gridTemplateRows: '1fr',
+    gridTemplateColumns: '1fr 1fr',
+    gridGap: 24,
   },
   modalForm: {
     display: 'flex',
@@ -79,128 +82,76 @@ export type GroupsProps = {};
 
 function Groups({}: GroupsProps) {
   const router = useRouter();
-  const [, createStudent] = useCreateStudentMutation();
-  const [, createAttendance] = useCreateAttendanceMutation();
-  const [, updateAttendance] = useUpdateAttendanceMutation();
-  const [groupsResponse] = useGroupsQuery();
-  const [studentsResponse] = useStudentsQuery({
-    variables: { groupId: +router.query.id },
-  });
+  const states = useAppSelector((state) => state);
+
+  console.log(states);
+  const dispatch = useAppDispatch();
+  const { groupClasses, group, period } = useAppSelector((state) => ({
+    period: state.groupsReducer.currentPeriod,
+    group: state.groupsReducer.list.find((g) => g.id === router.query.id),
+    groupClasses:
+      state.groupsReducer.classes?.[router.query.id?.toString()] || [],
+  }));
+
+  React.useEffect(() => {
+    dispatch(
+      fetchClassesByGroup({ group_id: router.query.id?.toString(), period }),
+    );
+    dispatch(fetchStudentsByGroup({ group_id: router.query.id?.toString() }));
+  }, [router.query.id]);
+
+  const students = useAppSelector(
+    (state) => state.studentsReducer.list?.[router.query.id?.toString()] || [],
+  );
+
   const [isCreating, setIsCreating] = React.useState<boolean>(false);
   const [reportIsOpen, setReportIsOpen] = React.useState<boolean>(false);
+  const [
+    periodCreationIsOpen,
+    setPeriodCreationIsOpen,
+  ] = React.useState<boolean>(false);
+
   const classes = useStyles();
   const [state, setField] = useFormState({});
-  const [date, setDate] = React.useState<Date>(new Date());
   const [dateRange, setDateRange] = React.useState<{ from: Date; to: Date }>({
     to: new Date(),
     from: new Date(),
   });
 
   async function handleStudentCreation() {
-    await createStudent({
-      object: { name: state.name, group_id: +router.query.id },
-    });
+    await dispatch(
+      insertStudent({
+        name: state.name,
+        group_id: router.query.id?.toString(),
+      }),
+    );
 
     setIsCreating(false);
   }
 
-  async function handleAttendance(student, status) {
-    const isCreated = !student.attendances?.find(
-      (a) => formattedDate === format(new Date(a.date), 'yyyy-MM-dd'),
-    );
-    const formattedDate = format(date, 'yyyy-MM-dd');
-    if (isCreated) {
-      await createAttendance({
-        object: {
-          student_id: student.id,
-          date: formattedDate,
-          status,
-          attended: true,
-        },
-      });
-    } else {
-      await updateAttendance({
-        object: { status },
-        id: student.attendances?.find(
-          (a) => formattedDate === format(new Date(a.date), 'yyyy-MM-dd'),
-        )?.id,
-      });
-    }
-  }
-  const group = groupsResponse.data?.groups.find(
-    (g) => g.id === +router.query.id,
-  );
+  const trail = useTrail(groupClasses.length || 0, {
+    to: { opacity: 1, transform: 'translateY(0%)' },
+    from: { opacity: 0, transform: 'translateY(60%)', marginTop: 12 },
+  });
+  let showedMonths = [];
   return (
     <div className={classes.container}>
-      <div>
-        <Button onClick={() => setIsCreating(true)}>Create Student</Button>
-      </div>
-      <div className={classes.groups}>
-        <Card
-          style={{ backgroundColor: '#d6f3db', position: 'relative' }}
-          elevation={5}
-        >
-          <h2 style={{ padding: 24 }}>Attendance - "{group?.name}"</h2>
-          <Divider style={{ backgroundColor: 'black' }} />
-          <div style={{ padding: 24 }}>
-            <div
-              className={classes.studentAtt}
-              style={{ margin: 12, justifyContent: 'center' }}
-            >
-              <DatePicker
-                label="Attendance Register Date"
-                size="small"
-                inputVariant="outlined"
-                onChange={setDate}
-                value={date}
-              />
-            </div>
-            {studentsResponse.data?.students.map((s) => (
-              <div key={s.id + date.toString()} className={classes.studentAtt}>
-                <div>{s.name}</div>
-                <Select
-                  value={
-                    attendancesToObject(s.attendances)[
-                      format(date, 'yyyy-MM-dd')
-                    ] || ''
-                  }
-                  onChange={(e) => handleAttendance(s, e.target.value)}
-                >
-                  <MenuItem value={'p'}>P</MenuItem>
-                  <MenuItem value={'a'}>A</MenuItem>
-                  <MenuItem value={'r'}>R</MenuItem>
-                </Select>
-              </div>
-            ))}
-          </div>
-          <Divider />
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-evenly',
-              bottom: 24,
-              position: 'absolute',
-            }}
-          >
+      <Card style={{ padding: 24 }}>
+        <div>
+          <Button onClick={() => setPeriodCreationIsOpen(true)}>
+            Generate Period Classes
+          </Button>
+          <div>
             <DatePicker
-              label="From Date"
-              size="small"
-              inputVariant="outlined"
-              style={{ width: '30%' }}
-              onChange={(newDate) =>
-                setDateRange({ ...dateRange, from: newDate })
-              }
               value={dateRange.from}
-            />
+              label="From"
+              onChange={(d) => setDateRange({ ...dateRange, from: d })}
+            />{' '}
+            -
             <DatePicker
-              label="To Date"
-              size="small"
-              inputVariant="outlined"
-              style={{ width: '30%' }}
-              onChange={(newDate) =>
-                setDateRange({ ...dateRange, to: newDate })
-              }
               value={dateRange.to}
+              label="To"
+              onChange={(d) => setDateRange({ ...dateRange, to: d })}
             />
             <Button
               onClick={() => {
@@ -214,8 +165,66 @@ function Groups({}: GroupsProps) {
               Generar Reporte
             </Button>
           </div>
-        </Card>
-      </div>
+        </div>
+        {groupClasses.length ? (
+          <div
+            style={{
+              display: 'flex',
+              width: '100%',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+            }}
+          >
+            {trail.map((props, index) => {
+              const singleClass = groupClasses[index];
+              return (
+                <animated.div style={props} key={singleClass.id}>
+                  {' '}
+                  <ClassGridItem
+                    monthToShow={
+                      showedMonths.includes(
+                        format(new Date(singleClass.date), 'LLLL'),
+                      )
+                        ? ''
+                        : (() => {
+                            showedMonths.push(
+                              format(new Date(singleClass.date), 'LLLL'),
+                            );
+                            return format(new Date(singleClass.date), 'LLLL');
+                          })()
+                    }
+                    singleClass={singleClass}
+                  />
+                </animated.div>
+              );
+            })}
+          </div>
+        ) : (
+          <div> Loading Classes./ </div>
+        )}
+      </Card>
+
+      <Card style={{ padding: 24 }}>
+        <span> Students</span>
+        <Button onClick={() => setIsCreating(true)}>Create Student</Button>
+
+        <List>
+          {students.map((student) => (
+            <ListItem>
+              <ListItemText primary={student.name}> </ListItemText>
+              <ListItemSecondaryAction>
+                <IconButton>
+                  <Icon>delete</Icon>
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+          ))}
+        </List>
+      </Card>
+      <GeneratePeriodModal
+        open={periodCreationIsOpen}
+        onClose={() => setPeriodCreationIsOpen(false)}
+      />
       <Dialog open={isCreating} onClose={() => setIsCreating(false)}>
         <DialogTitle>Create Student</DialogTitle>
         <DialogContent>
@@ -224,106 +233,15 @@ function Groups({}: GroupsProps) {
           </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleStudentCreation}>Create Group</Button>
+          <Button onClick={handleStudentCreation}>Create Student</Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={reportIsOpen} fullScreen>
-        <DialogTitle>
-          {group?.name} -{' '}
-          <span style={{ fontSize: 24, fontWeight: 700 }}>
-            {format(dateRange.from, 'MMMM do')}
-          </span>{' '}
-          to{' '}
-          <span style={{ fontSize: 24, fontWeight: 700 }}>
-            {format(dateRange.to, 'MMMM do')}
-          </span>
-        </DialogTitle>
-        <DialogContent>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell
-                    style={{
-                      fontSize: 20,
-                      fontWeight: 'bold',
-                    }}
-                    component="th"
-                  >
-                    Attenddance
-                  </TableCell>
-                  {attendanceDateRange(
-                    dateRange.from,
-                    dateRange.to,
-                    studentsResponse.data?.students
-                      .map((s) => s.attendances)
-                      .flat(),
-                  ).map((key, i) => (
-                    <TableCell
-                      align="center"
-                      style={{
-                        fontSize: 20,
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      {format(key, 'MMM do')}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {studentsResponse.data?.students.map((g) => (
-                  <TableRow>
-                    <TableCell
-                      style={{
-                        fontSize: 18,
-                      }}
-                      component="th"
-                    >
-                      {g.name}
-                    </TableCell>
-                    {attendanceDateRange(
-                      dateRange.from,
-                      dateRange.to,
-                      studentsResponse.data?.students
-                        .map((s) => s.attendances)
-                        .flat(),
-                    ).map((key, i) => (
-                      <TableCell align="center">
-                        <span
-                          style={{
-                            fontSize: 20,
-                            textTransform: 'uppercase',
-                            fontWeight: 'bold',
-                            color:
-                              attendancesToObject(g.attendances)[
-                                format(key, 'yyyy-MM-dd')
-                              ] === 'p'
-                                ? '#1fc97a'
-                                : attendancesToObject(g.attendances)[
-                                    format(key, 'yyyy-MM-dd')
-                                  ] === 'r'
-                                ? '#dbd035'
-                                : 'red',
-                          }}
-                        >
-                          {attendancesToObject(g.attendances)[
-                            format(key, 'yyyy-MM-dd')
-                          ] || 'A'}
-                        </span>
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </DialogContent>
-      </Dialog>
+      <ReportModal dateRange={dateRange} reportIsOpen={reportIsOpen} />
     </div>
   );
 }
+
+Groups.Layout = GroupsLayout;
 
 export default Groups;

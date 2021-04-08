@@ -1,7 +1,0 @@
-mutation CreateGroup($object: groups_insert_input!) {
-  insert_groups_one(object: $object) {
-    id
-    name
-    date
-  }
-}
